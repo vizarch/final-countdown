@@ -65,8 +65,8 @@
       .map(toTime)
       .subscribe((x) => {
         if (x.alert) { clock.classList.add('alert'); }
-        minutes.innerText = pad(x.minutes);
-        seconds.innerText = pad(x.seconds);
+        minutes.innerHTML = pad(x.minutes);
+        seconds.innerHTML = pad(x.seconds);
       });
   </script>
 </html>
