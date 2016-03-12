@@ -45,28 +45,43 @@
   </body>
   <script src="https://npmcdn.com/@reactivex/rxjs@5.0.0-beta.2/dist/global/Rx.umd.js"></script>
   <script>
+    // DOM elements
     const clock = document.getElementById('clock');
     const minutes = document.getElementById('minutes');
     const seconds = document.getElementById('seconds');
 
+    // Options
     const params = new URLSearchParams(location.search.slice(1));
     const totalTime = parseInt(params.get('time'), 10) || 20 * 60; // 20 minutes
     const alertTime = parseInt(params.get('alert'), 10) || 3 * 60; // 3 minutes
+    let direction = params.get('direction') === 'up' ? 'up' : 'down';
+
+    // Helper stuff
     const toTime = (x) => ({
       seconds: Math.floor(x % 60),
       minutes: Math.floor(x / 60),
-      alert: x < alertTime
+      alert: direction === 'up' ? x > totalTime - alertTime : x < alertTime
     });
     const pad = (number) => number <= 9 ? ('0' + number) : number.toString();
 
+    // Clock stuff
+    const initialValue = direction === 'up' ? 0 : totalTime;
+    const inc = (acc) => acc + 1;
+    const dec = (acc) => acc - 1;
+    const op = (acc) => (direction === 'up' ? inc : dec)(acc)
+    const stillCan = (x) => direction === 'up' ? x <= totalTime : x >= 0;
+    const render = (x) => {
+      clock.classList[x.alert ? 'add' : 'remove']('alert');
+      minutes.innerHTML = pad(x.minutes);
+      seconds.innerHTML = pad(x.seconds);
+    }
+
     Rx.Observable.interval(1000)
-      .map((x) => totalTime - x)
-      .takeWhile((x) => x >= 0)
+      .mapTo(op)
+      .startWith(initialValue)
+      .scan((acc, op) => op(acc))
+      .takeWhile(stillCan)
       .map(toTime)
-      .subscribe((x) => {
-        if (x.alert) { clock.classList.add('alert'); }
-        minutes.innerHTML = pad(x.minutes);
-        seconds.innerHTML = pad(x.seconds);
-      });
+      .subscribe(render);
   </script>
 </html>
