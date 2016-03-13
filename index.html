@@ -45,6 +45,10 @@
   </body>
   <script src="https://npmcdn.com/@reactivex/rxjs@5.0.0-beta.2/dist/global/Rx.umd.js"></script>
   <script>
+    // TODO
+    // - customize total and alert time (separate page)
+    // - ffw/rwd
+
     // DOM elements
     const clock = document.getElementById('clock');
     const minutes = document.getElementById('minutes');
@@ -57,10 +61,10 @@
     let direction = params.get('direction') === 'up' ? 'up' : 'down';
 
     // Helper stuff
-    const toTime = (x) => ({
-      seconds: Math.floor(x % 60),
-      minutes: Math.floor(x / 60),
-      alert: direction === 'up' ? x > totalTime - alertTime : x < alertTime
+    const toTime = (seconds) => ({
+      seconds: Math.floor(seconds % 60),
+      minutes: Math.floor(seconds / 60),
+      alert: direction === 'up' ? seconds > totalTime - alertTime : seconds < alertTime
     });
     const pad = (number) => number <= 9 ? ('0' + number) : number.toString();
 
@@ -68,18 +72,38 @@
     const initialValue = direction === 'up' ? 0 : totalTime;
     const inc = (acc) => acc + 1;
     const dec = (acc) => acc - 1;
-    const op = (acc) => (direction === 'up' ? inc : dec)(acc)
-    const stillCan = (x) => direction === 'up' ? x <= totalTime : x >= 0;
-    const render = (x) => {
-      clock.classList[x.alert ? 'add' : 'remove']('alert');
-      minutes.innerHTML = pad(x.minutes);
-      seconds.innerHTML = pad(x.seconds);
+    const incOrDec = (acc) => (direction === 'up' ? inc : dec)(acc)
+    const reset = () => initialValue;
+    const stillCan = (seconds) => direction === 'up' ? seconds <= totalTime : seconds >= 0;
+    const render = (time) => {
+      clock.classList[time.alert ? 'add' : 'remove']('alert');
+      minutes.innerHTML = pad(time.minutes);
+      seconds.innerHTML = pad(time.seconds);
     }
 
-    Rx.Observable.interval(1000)
-      .mapTo(op)
+    const interval$ = Rx.Observable.interval(1000);
+    const click$ = Rx.Observable.fromEvent(document, 'click');
+    const dblclick$ = Rx.Observable.fromEvent(document, 'dblclick');
+    const toggleOrReset$ = Rx.Observable.merge(
+      click$.mapTo((isRunning) => !isRunning),
+      dblclick$.mapTo(() => false)
+    )
+      .startWith(false)
+      .scan((isRunning, toggleOrFalse) => toggleOrFalse(isRunning))
+      .do((isRunning) => console.log('Running:', isRunning))
+      .share();
+
+    const start$ = toggleOrReset$.filter((isRunning) => isRunning);
+    const stop$ = toggleOrReset$.filter((isRunning) => !isRunning);
+    const incOrDecOrReset$ = Rx.Observable.merge(
+      interval$.takeUntil(Rx.Observable.merge(stop$, dblclick$)).mapTo(incOrDec),
+      dblclick$.mapTo(reset)
+    );
+
+    start$
+      .switchMapTo(incOrDecOrReset$)
       .startWith(initialValue)
-      .scan((acc, op) => op(acc))
+      .scan((seconds, incOrDecOrReset) => incOrDecOrReset(seconds))
       .takeWhile(stillCan)
       .map(toTime)
       .subscribe(render);
