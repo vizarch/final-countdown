@@ -7,6 +7,7 @@
 Simple online clock that can work as a stopwatch or countdown timer with start, pause and reset functions. 
 
 Total and alert times and count direction can be changed using query params, e.g.
+
 https://szimek.github.io/final-countdown/?time=60&alert=30
 <br>
 https://szimek.github.io/final-countdown/?time=10&alert=5&direction=up
