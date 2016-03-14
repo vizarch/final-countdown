@@ -25,6 +25,4 @@ alert time:  180 seconds (3 minutes)
 direction:  down
 ```
 
-Click to start or pause the timer, double click to reset.
-
 Uses [RxJS](https://github.com/ReactiveX/RxJS), because why not.
