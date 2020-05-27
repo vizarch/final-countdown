@@ -2,8 +2,8 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Final countdown</title>
-    <meta name="description" content="Simple online clock that can work as a stopwatch or countdown timer with start, pause and reset functions.">
+    <title>Timer</title>
+    <meta name="description" content="Timer">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="mobile-web-app-capable" content="yes">
     <style>
@@ -20,8 +20,8 @@
         font-family: "Roboto";
         font-weight: bold;
         font-size: 50vh;
-        background-color: #333333;
-        color: #CCCCCC;
+        background: url("background.jpg") no-repeat center fixed;
+        color: grey;
       }
       #clock {
         user-select: none;
@@ -50,7 +50,8 @@
       <span id="minutes"></span>:<span id="seconds"></span>
     </div>
   </body>
-  <script src="https://npmcdn.com/@reactivex/rxjs@5.0.0-beta.2/dist/global/Rx.umd.js"></script>
+  <!--<script src="https://npmcdn.com/@reactivex/rxjs@5.0.0-beta.2/dist/global/Rx.umd.js"></script>-->
+  <script src="Rx.umd.js"></script>
   <script>
     // TODO
     // - customize total and alert time (separate page)

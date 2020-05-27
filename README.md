@@ -1,5 +1,7 @@
 # Final countdown
 
+I adapted the repository to myself, so visit original -> https://github.com/szimek/final-countdown
+
 <img width="400" alt="final-countdown" src="https://cloud.githubusercontent.com/assets/9873/13755264/abbca4f2-ea1a-11e5-971e-ad7fdbaba65b.png">
 <img width="400" alt="final-countdown-alert" src="https://cloud.githubusercontent.com/assets/9873/13755518/ed9d2c1a-ea1b-11e5-9fd6-dcc482538f3a.png">
 
